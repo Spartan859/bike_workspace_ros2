@@ -1,0 +1,6 @@
+[submodule "servo_rs485_ros2"]
+	path = servo_rs485_ros2
+	url = git@github.com:Spartan859/servo_rs485_ros2.git
+[submodule "imu_ros2"]
+	path = imu_ros2
+	url = git@github.com:Spartan859/imu_ros2.git
