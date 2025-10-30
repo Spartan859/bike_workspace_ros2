@@ -1,0 +1,34 @@
+# ROS2 build and install folders
+build/
+install/
+log/
+
+# Colcon build artifacts
+colcon_cache/
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Visual Studio Code settings
+.vscode/
+
+# MacOS files
+.DS_Store
+
+# ROS2 launch files backup
+*.launch.py~
+
+# Test results
+test_results/
+
+# Other common ignores
+*.swp
+*.bak
+*.tmp
