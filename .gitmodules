@@ -7,3 +7,7 @@
 [submodule "balance_controller_ros2"]
 	path = balance_controller_ros2
 	url = git@github.com:Spartan859/balance_controller_ros2.git
+[submodule "odrive_ros2_control"]
+	path = odrive_ros2_control
+	url = git@github.com:Factor-Robotics/odrive_ros2_control.git
+	branch = humble-fw-v0.5.1
