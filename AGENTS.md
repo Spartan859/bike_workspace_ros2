@@ -186,6 +186,41 @@ ros2 launch balance_controller_ros2 balance_controller.launch.py use_mock_hardwa
 
 ---
 
+## 当前 Bringup 与配置（以用户修正版为准）
+
+**bringup.launch.py（启动顺序与参数）**
+- 启动顺序：`servo_rs485_node` → `imu_serial_node` → `imu_node` → `robot_state_publisher` → `ros2_control_node` → spawner(`joint_state_broadcaster`、`balance_controller`)。
+- Launch 参数（命令行可选）：
+	- `use_mock_hardware`：选择使用 mock ros2_control 硬件或 ODrive xacro。
+	- `servo_port`：舵机串口（默认 `/dev/ttyUSB1`，Windows 传 `COM*`）。
+	- `servo_id`：舵机 ID（默认 `1`）。
+	- `imu_port`：IMU 串口（默认 `/dev/ttyUSB0`）。
+	- `imu_baud`：IMU 波特率（默认 `115200`）。
+- 关键调用：spawner 使用 `--controller-manager /controller_manager` 指定控制管理器；URDF 由 `use_mock_hardware` 选择 mock 或 ODrive 版本。
+
+示例（Windows cmd）：
+```bat
+ros2 launch balance_controller_ros2 bringup.launch.py use_mock_hardware:=true servo_port:=COM5 servo_id:=1 imu_port:=COM6 imu_baud:=115200
+```
+
+**controllers.yaml（结构与关键参数）**
+- 顶层 `controller_manager.ros__parameters`：
+	- `update_rate: 500`
+	- `joint_state_broadcaster.type: joint_state_broadcaster/JointStateBroadcaster`
+	- `balance_controller.type: balance_controller_ros2/BalanceController`
+- 顶层 `balance_controller.ros__parameters`：控制器参数分组（以下为当前值）：
+	- 关节名：`drive_joint_name: joint0`，`flywheel_joint_name: joint1`
+	- 日志：`log_enable: true`，`log_hz: 10.0`
+	- 角度环 PID：`angle_kp: 350.0`，`angle_ki: 0.0`，`angle_kd: 0.7`
+	- 角速度环 PID：`angle_v_kp: 0.45`，`angle_v_ki: 0.0`，`angle_v_kd: 0.1`
+	- 飞轮零速环：`flywheel_speed_kp: 0.1`，`flywheel_speed_ki: 0.45`，`flywheel_speed_integral_limit_min: -400.0`，`flywheel_speed_integral_limit_max: 400.0`
+	- 限幅：`flywheel_speed_limit: 25.0`，`flywheel_accel_limit: 15.0`，`roll_diff_limit: 0.1`
+	- 动态零点：`machine_middle_angle_init: -2.2`，`bike_turn_scale_deg: 0.057`，`bike_speed_scale_deg: 0.14`，`middle_angle_recitfy_limit_deg: 3.0`
+	- 舵机：`servo_center_deg: 8.0`，`servo_middle_range: 2.0`
+
+> 注：控制器参数位于顶层 `balance_controller` 分组；控制器类型在 `controller_manager` 下声明。当前 bringup 与此结构配套，已按用户修订版本运行验证。
+
+
 ## servo_rs485_ros2 接口文档（节点/话题/服务/参数）
 
 **概览**
@@ -224,9 +259,9 @@ ros2 launch balance_controller_ros2 balance_controller.launch.py use_mock_hardwa
 			 - `speed_dps`（float64）期望匀速转动速度（度/秒，<=0 时直接跳转目标角度）
 			 - `step_interval_ms`（int32）内部拆分每步的时间间隔（毫秒，<1 自动提升为10ms；建议 30~100ms）
 		 - Response：
-			 - `success`（bool）指令已执行（动作在服务调用期间完成）
-		 - 行为：服务调用阻塞执行，内部按速度拆分为多步调用基础 `set_angle` 写入位置；结束后保证最终精确到达。
-		 - 注意：长距离 + 低速度可能阻塞数秒，若需异步可在上层封装 action。
+			 - `success`（bool）是否成功“启动”动作（异步）
+		 - 行为（异步）：服务调用“立即返回”。节点后台线程按速度拆分为多步调用基础 `set_angle` 写入位置；完成后自动停止。
+		- 并发：支持抢占。若上一次动作未完成，将取消上一次并启动新动作（服务立即返回 success=true）。
 	- Request：无
 	- Response：
 		- `degree`（float64）当前角度（单位：度）
