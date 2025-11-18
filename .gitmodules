@@ -11,3 +11,6 @@
 	path = odrive_ros2_control
 	url = git@github.com:Factor-Robotics/odrive_ros2_control.git
 	branch = humble-fw-v0.5.1
+[submodule "camera_ai_ros2"]
+	path = camera_ai_ros2
+	url = git@github.com:Spartan859/camera_ai_ros2.git
