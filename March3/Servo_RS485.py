@@ -229,18 +229,18 @@ if __name__ == '__main__':
     else:
         print("舵机 PING 失败，请检查连接或ID。")
         exit()
-    my_servo.set_angle(degree=8, time_ms=500)
+    my_servo.set_angle(degree=7, time_ms=500)
     time.sleep(1.5)
 
     print("\n--- 测试: 读取当前角度 ---")
     print(f"舵机当前角度为: {my_servo.current_degree:.2f} 度")
-    my_servo.set_angle_with_speed(target_degree=18, speed_dps=5.0, step_interval_ms=100)
-    time.sleep(1.5)
+    # my_servo.set_angle_with_speed(target_degree=18, speed_dps=5.0, step_interval_ms=100)
+    # time.sleep(1.5)
 
-    print("\n--- 测试: 再次读取当前角度 ---")
-    print(f"舵机当前角度为: {my_servo.current_degree:.2f} 度")
-    my_servo.set_angle(degree=-10, time_ms=1000)
-    time.sleep(1.5)
+    # print("\n--- 测试: 再次读取当前角度 ---")
+    # print(f"舵机当前角度为: {my_servo.current_degree:.2f} 度")
+    # my_servo.set_angle(degree=-10, time_ms=1000)
+    # time.sleep(1.5)
 
-    print("\n--- 测试: 再次读取当前角度 ---")
-    print(f"舵机当前角度为: {my_servo.current_degree:.2f} 度")
+    # print("\n--- 测试: 再次读取当前角度 ---")
+    # print(f"舵机当前角度为: {my_servo.current_degree:.2f} 度")
